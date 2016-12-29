@@ -7,8 +7,8 @@ import random
 
 import ImageGenerator as ig
 
-IMAGE_SIZE_X = 256
-IMAGE_SIZE_Y = 256
+IMAGE_SIZE_X = 255
+IMAGE_SIZE_Y = 255
 
 def resize_with_pad(image, height=IMAGE_SIZE_Y, width=IMAGE_SIZE_X):
     
@@ -68,7 +68,7 @@ def read_image_DL(file_path):
     images.append(image)
     images.append(ig.addGaussianNoise(image))
 
-    for i in range(1, 20):
+    for i in range(1, 15):
         ero = ig.erosion(image, np.ones(i))
         delit = ig.delition(image, np.ones(i))
         ero_n = ig.addGaussianNoise(ero)

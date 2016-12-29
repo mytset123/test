@@ -79,23 +79,23 @@ class Model(object):
     def build_model(self, dataset, nb_classes=10):
         self.model = Sequential()
 
-        self.model.add(Convolution2D(32, 3, 3, border_mode='same', input_shape=dataset.X_train.shape[1:]))
+        self.model.add(Convolution2D(32, 5, 5, border_mode='same', input_shape=dataset.X_train.shape[1:]))
         self.model.add(Activation('relu'))
-        self.model.add(Convolution2D(32, 3, 3))
-        self.model.add(Activation('relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.25))
-
-        self.model.add(Convolution2D(64, 3, 3, border_mode='same'))
-        self.model.add(Activation('relu'))
-        self.model.add(Convolution2D(64, 3, 3))
+        self.model.add(Convolution2D(32, 5, 5))
         self.model.add(Activation('relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Convolution2D(128, 3, 3, border_mode='same', input_shape=dataset.X_train.shape[1:]))
+        self.model.add(Convolution2D(64, 5, 5, border_mode='same'))
         self.model.add(Activation('relu'))
-        self.model.add(Convolution2D(128, 3, 3))
+        self.model.add(Convolution2D(64, 5, 5))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.25))
+
+        self.model.add(Convolution2D(128, 5, 5, border_mode='same', input_shape=dataset.X_train.shape[1:]))
+        self.model.add(Activation('relu'))
+        self.model.add(Convolution2D(128, 5, 5))
         self.model.add(Activation('relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
@@ -133,7 +133,7 @@ class Model(object):
                 samplewise_std_normalization=False,   # divide each input by its std
                 zca_whitening=False,                  # apply ZCA whitening
                 rotation_range=10,                     # randomly rotate images in the range (degrees, 0 to 180)
-                width_shift_range=0.1,                # randomly shift images horizontally (fraction of total width)
+                width_shift_range=0.3,                # randomly shift images horizontally (fraction of total width)
                 height_shift_range=0.3,               # randomly shift images vertically (fraction of total height)
                 horizontal_flip=True,                 # randomly flip images
                 vertical_flip=True)                  # randomly flip images
@@ -165,9 +165,9 @@ class Model(object):
         #if image.shape != (1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y):
         #     image = resize_with_pad(image)
         #   image = image.reshape((1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-        if image.shape != (1, IMAGE_SIZE_X, IMAGE_SIZE_Y, 1):
+        if image.shape != (1, 1,IMAGE_SIZE_X, IMAGE_SIZE_Y):
             image = resize_with_pad(image)
-            image = image.reshape((1, IMAGE_SIZE_X, IMAGE_SIZE_Y, 1))
+            image = image.reshape((1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y))
 
 
         image = image.astype('float32')
