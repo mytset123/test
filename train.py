@@ -93,6 +93,13 @@ class Model(object):
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
+        self.model.add(Convolution2D(128, 3, 3, border_mode='same', input_shape=dataset.X_train.shape[1:]))
+        self.model.add(Activation('relu'))
+        self.model.add(Convolution2D(128, 3, 3))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.25))
+
         self.model.add(Flatten())
         self.model.add(Dense(512))
         self.model.add(Activation('relu'))
