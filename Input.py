@@ -5,8 +5,10 @@ import numpy as np
 import cv2
 import random
 
-IMAGE_SIZE_X = 25
-IMAGE_SIZE_Y = 64
+import ImageGenerator as ig
+
+IMAGE_SIZE_X = 256
+IMAGE_SIZE_Y = 256
 
 def resize_with_pad(image, height=IMAGE_SIZE_Y, width=IMAGE_SIZE_X):
     
@@ -50,63 +52,6 @@ def traverse_dir(path):
 
     return images, labels
 
-def read_image_DL(file_path):
-    image = read_image(file_path)
-
-    images = []
-    images.append(invertImage(image))
-    #images.append(addGaussianNoise(image))
-
-    #for x in range(10):
-    #    for y in range(5):
-    #        for a in range(10):
-    #            images.append(warpImage(image, np.pi/(50-a), x, y))
-    #            images.append(warpImage(image, 2*np.pi - (np.pi/(50-a)), -x, -y))
-
-    for i in range(1, 3):
-        ero = erosion(image, np.ones(i))
-        delit = delition(image, np.ones(i))
-
-        images.append(invertImage(ero))
-        images.append(invertImage(delit))
-        
-    return images
-
-def invertImage(image):
-    return 255 - image
-
-def erosion(image, kernel):
-    result = cv2.erode(image, kernel, iterations=1)
-
-    filename = "./tmp/" + "erosion_" + str(kernel[0]) + "_" + str(random.randint(0,99999)) + ".png"
-    cv2.imwrite(filename, result)
-    return result
-
-def delition(image, kernel):
-    result = cv2.dilate(image, kernel, iterations=1)
-
-    filename = "./tmp/" + "delate_" + str(kernel[0]) + "_" + str(random.randint(0,99999)) + ".png"
-    cv2.imwrite(filename, result)
-    return result
-
-#def centroid(image):
-#    mu = cv2.moments(image)
-#    c = (mu["mu10"]/mu["mu00"], mu["mu01"]/mu["mu00"])
-
-def warpImage(image, rad, x, y):
-    size = tuple(np.array([image.shape[1], image.shape[0]]))
-
-    matrix = [
-        [np.cos(rad), -1 * np.sin(rad), x],
-        [np.sin(rad), np.cos(rad), y]
-        ]
-    affine_matrix = np.float32(matrix)
-
-    warp_img = cv2.warpAffine(image, affine_matrix, size, flags=cv2.INTER_LINEAR, borderValue=(255, 255, 255, 255))
-    filename = "./tmp/" + str(rad) + "_" + str(x) + "_" + str(y) + "_" + str(random.randint(0,99999)) + ".png"
-    cv2.imwrite(filename, warp_img)
-    return warp_img
-
 def read_image(file_path):
     image = cv2.imread(file_path)
 
@@ -116,6 +61,28 @@ def read_image(file_path):
 
     return image_gray
 
+def read_image_DL(file_path):
+    image = read_image(file_path)
+
+    images = []
+    images.append(image)
+    images.append(ig.addGaussianNoise(image))
+
+    for i in range(1, 20):
+        ero = ig.erosion(image, np.ones(i))
+        delit = ig.delition(image, np.ones(i))
+        ero_n = ig.addGaussianNoise(ero)
+        delit_n = ig.addGaussianNoise(delit)
+
+        images.append(ero)
+        images.append(delit)
+        images.append(ero_n)
+        images.append(delit_n)
+
+    for i, img in enumerate(images):
+        images[i] = ig.invertImage(img)
+
+    return images
 
 def extract_data(path):
     images, labels = traverse_dir(path)
@@ -123,19 +90,10 @@ def extract_data(path):
     images = np.array(images)
     labels = np.array([getLabelFromPath(label) for label in labels])
 
+    for img, lab in zip(images, labels):
+        cv2.imwrite("./tmp/" + str(lab) + "_" + str(random.randint(1,99999)) + ".jpg", img)
+
     return images, labels
-
-# ガウシアンノイズ
-def addGaussianNoise(src):
-    row,col = src.shape
-    mean = 0
-    var = 0.1
-    sigma = 15
-    gauss = np.random.normal(mean,sigma,(row,col))
-    gauss = gauss.reshape(row,col)
-    noisy = src + gauss
-
-    return noisy
 
 def getLabelFromPath(path):
     if "DL_ROOT0" in path:
@@ -159,3 +117,4 @@ def getLabelFromPath(path):
     elif "DL_ROOT9" in path:
         return 9
     return -1
+
