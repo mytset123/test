@@ -165,9 +165,9 @@ class Model(object):
         #if image.shape != (1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y):
         #     image = resize_with_pad(image)
         #   image = image.reshape((1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y))
-        if image.shape != (1, 1,IMAGE_SIZE_X, IMAGE_SIZE_Y):
+        if image.shape != (1,IMAGE_SIZE_X, IMAGE_SIZE_Y, 1):
             image = resize_with_pad(image)
-            image = image.reshape((1, 1, IMAGE_SIZE_X, IMAGE_SIZE_Y))
+            image = image.reshape((1, IMAGE_SIZE_X, IMAGE_SIZE_Y, 1))
 
 
         image = image.astype('float32')
